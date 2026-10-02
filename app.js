@@ -4,11 +4,14 @@
   const PAGE_KEY = 'pp2026_chat_page';
   const DAY_KEY = 'pp2026_chat_day';
   const MODE_KEY = 'pp2026_chat_mode';
+  const MAX_RESULTS = 80;
 
   const app = document.getElementById('app');
   const chat = document.getElementById('chat');
   const metaLine = document.getElementById('meta-line');
   const searchInput = document.getElementById('search');
+  const searchBtn = document.getElementById('search-btn');
+  const searchResults = document.getElementById('search-results');
   const showThink = document.getElementById('show-think');
   const pagerTop = document.getElementById('pager-top');
   const pagerBottom = document.getElementById('pager-bottom');
@@ -22,6 +25,10 @@
   let currentPage = 1;
   let currentDay = 1;
   let currentTurns = [];
+  let searchIndex = null;
+  let searchIndexPromise = null;
+  let pendingHighlight = null; // { n, q }
+  let lastSearchQ = '';
 
   function esc(s) {
     return String(s)
@@ -56,7 +63,6 @@
     if (!meta) return;
     const total = totalUnits();
     const cur = currentUnit();
-    const label = browseMode === 'day' ? 'Day' : 'Page';
     const zhLabel = browseMode === 'day' ? '第' + cur + '天 / 共' + total + '天' : 'Page ' + cur + ' / ' + total;
     const parts = [];
     parts.push('<button type="button" data-go="prev"' + (cur <= 1 ? ' disabled' : '') + '>‹ Prev</button>');
@@ -88,7 +94,7 @@
   }
 
   function renderChat() {
-    const q = (searchInput && searchInput.value || '').trim();
+    const q = lastSearchQ || '';
     const thinkOn = !showThink || showThink.checked;
     const frag = document.createDocumentFragment();
     let shown = 0;
@@ -96,10 +102,6 @@
     const showDayDividers = browseMode === 'page';
 
     for (const t of currentTurns) {
-      if (q) {
-        const hay = (t.user + '\n' + t.think + '\n' + t.assistant).toLowerCase();
-        if (!hay.includes(q.toLowerCase())) continue;
-      }
       shown++;
       const day = t.day || 1;
 
@@ -173,12 +175,22 @@
     if (shown === 0) {
       const empty = document.createElement('div');
       empty.className = 'empty';
-      empty.textContent = q
-        ? (browseMode === 'day' ? '這一天沒有符合的結果。' : '本頁沒有符合的結果。')
-        : (browseMode === 'day' ? '這一天沒有對話。' : '本頁沒有對話。');
+      empty.textContent = browseMode === 'day' ? '這一天沒有對話。' : '本頁沒有對話。';
       chat.appendChild(empty);
     } else {
       chat.appendChild(frag);
+    }
+
+    if (pendingHighlight) {
+      const targetN = pendingHighlight.n;
+      pendingHighlight = null;
+      requestAnimationFrame(() => {
+        const el = document.getElementById('turn-' + targetN);
+        if (!el) return;
+        el.classList.add('turn-flash');
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setTimeout(() => el.classList.remove('turn-flash'), 2200);
+      });
     }
   }
 
@@ -205,7 +217,7 @@
     }
   }
 
-  async function goPage(n) {
+  async function goPage(n, opts) {
     if (!meta) return;
     n = Math.max(1, Math.min(meta.pages, n));
     currentPage = n;
@@ -223,10 +235,12 @@
     currentTurns = await res.json();
     updateMetaLine();
     renderChat();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (!(opts && opts.skipScroll)) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
-  async function goDay(n) {
+  async function goDay(n, opts) {
     if (!meta) return;
     const total = meta.totalDays || (meta.days && meta.days.length) || 1;
     n = Math.max(1, Math.min(total, n));
@@ -245,12 +259,14 @@
     currentTurns = await res.json();
     updateMetaLine();
     renderChat();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (!(opts && opts.skipScroll)) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
-  function goUnit(n) {
-    if (browseMode === 'day') return goDay(n);
-    return goPage(n);
+  function goUnit(n, opts) {
+    if (browseMode === 'day') return goDay(n, opts);
+    return goPage(n, opts);
   }
 
   function setMode(mode) {
@@ -259,14 +275,161 @@
     browseMode = mode;
     sessionStorage.setItem(MODE_KEY, mode);
     updateModeButtons();
-    if (searchInput) searchInput.placeholder = mode === 'day' ? '搜尋這一天…' : '搜尋本頁…';
     goUnit(currentUnit());
+  }
+
+  function loadSearchIndex() {
+    if (searchIndex) return Promise.resolve(searchIndex);
+    if (searchIndexPromise) return searchIndexPromise;
+    searchIndexPromise = fetch('data/search-index.json')
+      .then((res) => {
+        if (!res.ok) throw new Error('search-index ' + res.status);
+        return res.json();
+      })
+      .then((data) => {
+        searchIndex = data;
+        return data;
+      })
+      .catch((err) => {
+        searchIndexPromise = null;
+        throw err;
+      });
+    return searchIndexPromise;
+  }
+
+  function snippetAround(text, q, radius) {
+    const lower = text.toLowerCase();
+    const ql = q.toLowerCase();
+    const idx = lower.indexOf(ql);
+    if (idx < 0) {
+      const s = text.replace(/\s+/g, ' ').trim();
+      return s.length > 90 ? s.slice(0, 90) + '…' : s;
+    }
+    const start = Math.max(0, idx - radius);
+    const end = Math.min(text.length, idx + q.length + radius);
+    let snip = text.slice(start, end).replace(/\s+/g, ' ').trim();
+    if (start > 0) snip = '…' + snip;
+    if (end < text.length) snip = snip + '…';
+    return snip;
+  }
+
+  function hideSearchResults() {
+    if (!searchResults) return;
+    searchResults.hidden = true;
+    searchResults.innerHTML = '';
+  }
+
+  function showSearchResults(html) {
+    if (!searchResults) return;
+    searchResults.innerHTML = html;
+    searchResults.hidden = false;
+  }
+
+  async function runFullSearch() {
+    const q = (searchInput && searchInput.value || '').trim();
+    if (!q) {
+      lastSearchQ = '';
+      hideSearchResults();
+      renderChat();
+      return;
+    }
+    lastSearchQ = q;
+    showSearchResults('<div class="search-status">搜尋中…</div>');
+    try {
+      const data = await loadSearchIndex();
+      const ql = q.toLowerCase();
+      const hits = [];
+      for (const item of data.items) {
+        if ((item.text || '').toLowerCase().includes(ql)) {
+          hits.push(item);
+          if (hits.length >= MAX_RESULTS) break;
+        }
+      }
+      if (hits.length === 0) {
+        showSearchResults('<div class="search-status">全站沒有符合「' + esc(q) + '」的結果。</div>');
+        renderChat();
+        return;
+      }
+      const more = hits.length >= MAX_RESULTS
+        ? '<div class="search-status">顯示前 ' + MAX_RESULTS + ' 筆，請縮小關鍵字。</div>'
+        : '';
+      const list = hits.map((item) => {
+        const snip = snippetAround(item.text || item.snip || '', q, 36);
+        return (
+          '<button type="button" class="search-hit" role="option" data-n="' + item.n +
+          '" data-day="' + item.day + '" data-page="' + item.page + '">' +
+          '<span class="search-hit-meta">第' + item.day + '天 · Turn ' + item.n +
+          (browseMode === 'page' ? ' · p.' + item.page : '') + '</span>' +
+          '<span class="search-hit-snip">' + highlight(snip, q) + '</span>' +
+          '</button>'
+        );
+      }).join('');
+      showSearchResults(
+        '<div class="search-status">找到 ' + hits.length +
+        (hits.length >= MAX_RESULTS ? '+' : '') + ' 筆</div>' + list + more
+      );
+      renderChat();
+    } catch (e) {
+      console.error(e);
+      showSearchResults('<div class="search-status">搜尋索引載入失敗。</div>');
+    }
+  }
+
+  async function jumpToHit(n, day, page) {
+    hideSearchResults();
+    pendingHighlight = { n: n, q: lastSearchQ };
+    if (browseMode === 'day') {
+      if (day === currentDay && currentTurns.some((t) => t.n === n)) {
+        renderChat();
+        return;
+      }
+      await goDay(day, { skipScroll: true });
+    } else {
+      if (page === currentPage && currentTurns.some((t) => t.n === n)) {
+        renderChat();
+        return;
+      }
+      await goPage(page, { skipScroll: true });
+    }
   }
 
   if (modePageBtn) modePageBtn.addEventListener('click', () => setMode('page'));
   if (modeDayBtn) modeDayBtn.addEventListener('click', () => setMode('day'));
-  if (searchInput) searchInput.addEventListener('input', () => renderChat());
   if (showThink) showThink.addEventListener('change', () => renderChat());
+
+  if (searchBtn) searchBtn.addEventListener('click', () => runFullSearch());
+  if (searchInput) {
+    searchInput.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Enter') {
+        ev.preventDefault();
+        runFullSearch();
+      } else if (ev.key === 'Escape') {
+        hideSearchResults();
+      }
+    });
+    searchInput.addEventListener('input', () => {
+      if (!(searchInput.value || '').trim()) {
+        lastSearchQ = '';
+        hideSearchResults();
+        renderChat();
+      }
+    });
+  }
+  if (searchResults) {
+    searchResults.addEventListener('click', (ev) => {
+      const btn = ev.target.closest('.search-hit');
+      if (!btn) return;
+      const n = parseInt(btn.dataset.n, 10);
+      const day = parseInt(btn.dataset.day, 10);
+      const page = parseInt(btn.dataset.page, 10);
+      jumpToHit(n, day, page);
+    });
+  }
+  document.addEventListener('click', (ev) => {
+    if (!searchResults || searchResults.hidden) return;
+    const wrap = ev.target.closest('.search-wrap');
+    if (!wrap) hideSearchResults();
+  });
 
   async function boot() {
     try {
@@ -280,11 +443,11 @@
       const savedMode = sessionStorage.getItem(MODE_KEY);
       browseMode = savedMode === 'day' ? 'day' : 'page';
       updateModeButtons();
-      if (searchInput) {
-        searchInput.placeholder = browseMode === 'day' ? '搜尋這一天…' : '搜尋本頁…';
-      }
+      if (searchInput) searchInput.placeholder = '搜尋全站關鍵字…';
       currentPage = parseInt(sessionStorage.getItem(PAGE_KEY) || '1', 10) || 1;
       currentDay = parseInt(sessionStorage.getItem(DAY_KEY) || '1', 10) || 1;
+      // Prefetch search index in background
+      loadSearchIndex().catch(() => {});
       goUnit(currentUnit());
     } catch (e) {
       chat.innerHTML = '<div class="empty">無法載入對話資料。請確認用 http://127.0.0.1:8765/ 開啟（不要雙擊 index.html）。</div>';

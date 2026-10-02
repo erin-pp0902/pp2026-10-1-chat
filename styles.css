@@ -347,8 +347,8 @@ html, body {
 /* —— Day dividers —— */
 .day-divider {
   position: sticky;
-  top: 0;
-  z-index: 5; /* below sticky-chrome (30) so chat labels slide under chrome */
+  top: 118px;
+  z-index: 5; /* below sticky-chrome (30) */
   display: flex;
   align-items: center;
   gap: 12px;
@@ -429,4 +429,103 @@ html, body {
 @media (max-width: 560px) {
   .nav-bar { gap: 8px; }
   .mode-btn { padding: 6px 12px; font-size: 0.8rem; }
+}
+
+/* —— Full-site search —— */
+.search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+#search {
+  width: min(220px, 42vw);
+}
+.search-btn {
+  appearance: none;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--coffee);
+  color: var(--cream);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.search-btn:hover {
+  background: #6e4f3c;
+  box-shadow: 0 0 0 3px rgba(222,166,165,0.35);
+}
+.search-results {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: min(420px, 92vw);
+  max-height: min(52vh, 420px);
+  overflow-y: auto;
+  background: var(--paper);
+  border: 1px solid color-mix(in srgb, var(--border) 70%, var(--rose) 30%);
+  border-radius: 12px;
+  box-shadow: 0 10px 28px var(--shadow);
+  z-index: 40;
+  padding: 6px;
+}
+.search-status {
+  font-size: 0.8rem;
+  color: var(--muted);
+  padding: 8px 10px 6px;
+}
+.search-hit {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  text-align: left;
+  appearance: none;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--brown);
+}
+.search-hit:hover,
+.search-hit:focus-visible {
+  background: var(--bg-soft);
+  outline: none;
+}
+.search-hit-meta {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--heading);
+  letter-spacing: 0.02em;
+}
+.search-hit-snip {
+  font-size: 0.82rem;
+  color: var(--coffee);
+  line-height: 1.4;
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* Jump target clear of sticky chrome */
+.turn {
+  scroll-margin-top: 140px;
+}
+.turn-flash {
+  animation: turnFlash 2s ease;
+}
+@keyframes turnFlash {
+  0%, 35% {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--rose) 70%, var(--heading) 30%);
+    background: color-mix(in srgb, var(--bubble-me) 55%, transparent);
+    border-radius: 12px;
+  }
+  100% {
+    box-shadow: none;
+    background: transparent;
+  }
 }

@@ -16,7 +16,11 @@
         <span id="meta-line" class="meta-line"></span>
       </div>
       <div class="topbar-right">
-        <input type="search" id="search" placeholder="搜尋目前內容…" aria-label="Search">
+        <div class="search-wrap">
+          <input type="search" id="search" placeholder="搜尋全站關鍵字…" aria-label="搜尋全站關鍵字" autocomplete="off">
+          <button type="button" id="search-btn" class="search-btn" title="搜尋全站">搜尋</button>
+          <div id="search-results" class="search-results" hidden role="listbox" aria-label="搜尋結果"></div>
+        </div>
         <label class="toggle-think">
           <input type="checkbox" id="show-think" checked>
           （心裡面）
