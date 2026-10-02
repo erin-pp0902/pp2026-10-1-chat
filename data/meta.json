@@ -7,5 +7,175 @@
     "user": "（我）",
     "assistant": "（Peter）"
   },
-  "totalDays": 24
+  "totalDays": 24,
+  "days": [
+    {
+      "day": 1,
+      "turns": 94,
+      "file": "day-001.json",
+      "firstTurn": 1,
+      "lastTurn": 94
+    },
+    {
+      "day": 2,
+      "turns": 109,
+      "file": "day-002.json",
+      "firstTurn": 95,
+      "lastTurn": 203
+    },
+    {
+      "day": 3,
+      "turns": 75,
+      "file": "day-003.json",
+      "firstTurn": 204,
+      "lastTurn": 278
+    },
+    {
+      "day": 4,
+      "turns": 73,
+      "file": "day-004.json",
+      "firstTurn": 279,
+      "lastTurn": 351
+    },
+    {
+      "day": 5,
+      "turns": 86,
+      "file": "day-005.json",
+      "firstTurn": 352,
+      "lastTurn": 437
+    },
+    {
+      "day": 6,
+      "turns": 162,
+      "file": "day-006.json",
+      "firstTurn": 438,
+      "lastTurn": 599
+    },
+    {
+      "day": 7,
+      "turns": 177,
+      "file": "day-007.json",
+      "firstTurn": 600,
+      "lastTurn": 776
+    },
+    {
+      "day": 8,
+      "turns": 113,
+      "file": "day-008.json",
+      "firstTurn": 777,
+      "lastTurn": 889
+    },
+    {
+      "day": 9,
+      "turns": 84,
+      "file": "day-009.json",
+      "firstTurn": 890,
+      "lastTurn": 973
+    },
+    {
+      "day": 10,
+      "turns": 88,
+      "file": "day-010.json",
+      "firstTurn": 974,
+      "lastTurn": 1061
+    },
+    {
+      "day": 11,
+      "turns": 323,
+      "file": "day-011.json",
+      "firstTurn": 1062,
+      "lastTurn": 1384
+    },
+    {
+      "day": 12,
+      "turns": 113,
+      "file": "day-012.json",
+      "firstTurn": 1385,
+      "lastTurn": 1497
+    },
+    {
+      "day": 13,
+      "turns": 134,
+      "file": "day-013.json",
+      "firstTurn": 1498,
+      "lastTurn": 1631
+    },
+    {
+      "day": 14,
+      "turns": 142,
+      "file": "day-014.json",
+      "firstTurn": 1632,
+      "lastTurn": 1773
+    },
+    {
+      "day": 15,
+      "turns": 148,
+      "file": "day-015.json",
+      "firstTurn": 1774,
+      "lastTurn": 1921
+    },
+    {
+      "day": 16,
+      "turns": 305,
+      "file": "day-016.json",
+      "firstTurn": 1922,
+      "lastTurn": 2226
+    },
+    {
+      "day": 17,
+      "turns": 272,
+      "file": "day-017.json",
+      "firstTurn": 2227,
+      "lastTurn": 2498
+    },
+    {
+      "day": 18,
+      "turns": 152,
+      "file": "day-018.json",
+      "firstTurn": 2499,
+      "lastTurn": 2650
+    },
+    {
+      "day": 19,
+      "turns": 176,
+      "file": "day-019.json",
+      "firstTurn": 2651,
+      "lastTurn": 2826
+    },
+    {
+      "day": 20,
+      "turns": 72,
+      "file": "day-020.json",
+      "firstTurn": 2827,
+      "lastTurn": 2898
+    },
+    {
+      "day": 21,
+      "turns": 138,
+      "file": "day-021.json",
+      "firstTurn": 2899,
+      "lastTurn": 3036
+    },
+    {
+      "day": 22,
+      "turns": 418,
+      "file": "day-022.json",
+      "firstTurn": 3037,
+      "lastTurn": 3454
+    },
+    {
+      "day": 23,
+      "turns": 200,
+      "file": "day-023.json",
+      "firstTurn": 3455,
+      "lastTurn": 3654
+    },
+    {
+      "day": 24,
+      "turns": 10,
+      "file": "day-024.json",
+      "firstTurn": 3655,
+      "lastTurn": 3664
+    }
+  ]
 }

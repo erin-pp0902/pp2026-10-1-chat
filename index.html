@@ -15,7 +15,7 @@
       <span id="meta-line" class="meta-line"></span>
     </div>
     <div class="topbar-right">
-      <input type="search" id="search" placeholder="Search this page…" aria-label="Search">
+      <input type="search" id="search" placeholder="搜尋目前內容…" aria-label="Search">
       <label class="toggle-think">
         <input type="checkbox" id="show-think" checked>
         （心裡面）
@@ -23,7 +23,13 @@
     </div>
   </header>
 
-  <nav class="pager" id="pager-top"></nav>
+  <div class="nav-bar">
+    <div class="mode-toggle" role="group" aria-label="瀏覽模式">
+      <button type="button" id="mode-page" class="mode-btn active" data-mode="page">按頁</button>
+      <button type="button" id="mode-day" class="mode-btn" data-mode="day">按天</button>
+    </div>
+    <nav class="pager" id="pager-top"></nav>
+  </div>
 
   <main id="chat" class="chat" aria-live="polite"></main>
 
