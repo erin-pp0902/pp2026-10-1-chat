@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>PP2026/10/1 chat</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app" class="app">
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1>PP2026/10/1 chat</h1>
+      <span id="meta-line" class="meta-line"></span>
+    </div>
+    <div class="topbar-right">
+      <input type="search" id="search" placeholder="Search this page…" aria-label="Search">
+      <label class="toggle-think">
+        <input type="checkbox" id="show-think" checked>
+        （心裡面）
+      </label>
+    </div>
+  </header>
+
+  <nav class="pager" id="pager-top"></nav>
+
+  <main id="chat" class="chat" aria-live="polite"></main>
+
+  <nav class="pager" id="pager-bottom"></nav>
+
+  <footer class="foot">
+    <span>DeepSeek Peter · （我） / （Peter）</span>
+    <button type="button" id="logout" class="linkish">Lock</button>
+  </footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
