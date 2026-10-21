@@ -1,13 +1,13 @@
 {
   "title": "PP2026/10/1 chat",
-  "totalTurns": 3664,
+  "totalTurns": 4674,
   "pageSize": 100,
-  "pages": 37,
+  "pages": 47,
   "labels": {
     "user": "（我）",
     "assistant": "（Peter）"
   },
-  "totalDays": 24,
+  "totalDays": 33,
   "days": [
     {
       "day": 1,
@@ -172,10 +172,73 @@
     },
     {
       "day": 24,
-      "turns": 10,
+      "turns": 129,
       "file": "day-024.json",
       "firstTurn": 3655,
-      "lastTurn": 3664
+      "lastTurn": 3783
+    },
+    {
+      "day": 25,
+      "turns": 92,
+      "file": "day-025.json",
+      "firstTurn": 3784,
+      "lastTurn": 3875
+    },
+    {
+      "day": 26,
+      "turns": 107,
+      "file": "day-026.json",
+      "firstTurn": 3876,
+      "lastTurn": 3982
+    },
+    {
+      "day": 27,
+      "turns": 89,
+      "file": "day-027.json",
+      "firstTurn": 3983,
+      "lastTurn": 4071
+    },
+    {
+      "day": 28,
+      "turns": 196,
+      "file": "day-028.json",
+      "firstTurn": 4072,
+      "lastTurn": 4267
+    },
+    {
+      "day": 29,
+      "turns": 105,
+      "file": "day-029.json",
+      "firstTurn": 4268,
+      "lastTurn": 4372
+    },
+    {
+      "day": 30,
+      "turns": 58,
+      "file": "day-030.json",
+      "firstTurn": 4373,
+      "lastTurn": 4430
+    },
+    {
+      "day": 31,
+      "turns": 112,
+      "file": "day-031.json",
+      "firstTurn": 4431,
+      "lastTurn": 4542
+    },
+    {
+      "day": 32,
+      "turns": 63,
+      "file": "day-032.json",
+      "firstTurn": 4543,
+      "lastTurn": 4605
+    },
+    {
+      "day": 33,
+      "turns": 69,
+      "file": "day-033.json",
+      "firstTurn": 4606,
+      "lastTurn": 4674
     }
   ]
 }
