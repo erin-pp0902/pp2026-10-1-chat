@@ -20,7 +20,7 @@
   --bubble-peter: #fffaf3;
   --bubble-think: #f3eadc;
   --radius: 14px;
-  --font: "Segoe UI", "PingFang TC", "Noto Sans TC", "Hiragino Sans", system-ui, sans-serif;
+  --font: "Source Serif 4", "Noto Serif TC", "Songti TC", serif;
 }
 
 * { box-sizing: border-box; }
